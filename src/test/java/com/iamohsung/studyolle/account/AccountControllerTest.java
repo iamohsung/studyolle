@@ -1,6 +1,5 @@
 package com.iamohsung.studyolle.account;
 
-import com.iamohsung.studyolle.ConsoleMailSender;
 import com.iamohsung.studyolle.domain.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +67,7 @@ public class AccountControllerTest {
         Account account = accountRepository.findByEmail("ohsung@email.com");
         assertNotNull(account);
         assertNotEquals(account.getPassword(), "12345678");
+        assertNotNull(account.getEmailCheckToken());
         assertTrue(accountRepository.existsByEmail("ohsung@email.com"));
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
