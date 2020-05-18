@@ -1,19 +1,25 @@
 package com.iamohsung.studyolle.settings;
 
 import com.iamohsung.studyolle.domain.Account;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class Profile {
 
+    @Length(max = 35)
     private String bio;
 
+    @Length(max = 50)
     private String url;
 
+    @Length(max = 50)
     private String occupation;
 
+    @Length(max = 50)
     private String location;
 
     public Profile(Account account) {
