@@ -1,4 +1,4 @@
-package com.iamohsung.studyolle.settings;
+package com.iamohsung.studyolle.settings.form;
 
 import com.iamohsung.studyolle.domain.Account;
 import lombok.Data;
@@ -16,6 +16,7 @@ public class Notifications {
     private boolean studyUpdatedByWeb = true;
 
     public Notifications(Account account) {
+
         this.studyCreatedByEmail = account.isStudyCreatedByEmail();
         this.studyCreatedByWeb = account.isStudyCreatedByWeb();
         this.studyEnrollmentResultByEmail = account.isStudyEnrollmentResultByEmail();
