@@ -1,6 +1,7 @@
 package com.iamohsung.studyolle.account;
 
 import com.iamohsung.studyolle.domain.Account;
+import com.iamohsung.studyolle.domain.Tag;
 import com.iamohsung.studyolle.settings.form.Notifications;
 import com.iamohsung.studyolle.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -32,21 +35,15 @@ public class AccountService implements UserDetailsService {
 
     public Account processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateEmailCheckToken();
         sendSignUpConfirmEmail(newAccount);
 
         return newAccount;
     }
 
     private Account saveNewAccount(@Valid SignUpForm signUpForm) {
-        Account account = Account.builder()
-                .email(signUpForm.getEmail())
-                .nickname(signUpForm.getNickname())
-                .password(passwordEncoder.encode(signUpForm.getPassword()))
-                .studyCreatedByWeb(true)
-                .studyEnrollmentResultByWeb(true)
-                .studyUpdatedByWeb(true)
-                .build();
+        signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+        Account account = modelMapper.map(signUpForm, Account.class);
+        account.generateEmailCheckToken();
 
         return accountRepository.save(account);
     }
@@ -120,5 +117,20 @@ public class AccountService implements UserDetailsService {
         mailMessage.setSubject("스터디올레, 로그인 링크");
         mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() + "&email=" + account.getEmail());
         javaMailSender.send(mailMessage);
+    }
+
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().add(tag));
+    }
+
+    public Set<Tag> getTags(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getTags();
+    }
+
+    public void removeTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
     }
 }
